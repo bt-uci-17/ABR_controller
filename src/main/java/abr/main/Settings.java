@@ -54,4 +54,3 @@ public class Settings extends Activity {
         }).start();
     }
 }
-
