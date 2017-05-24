@@ -7,5 +7,6 @@ import ioio.lib.util.BaseIOIOLooper;
  */
 public abstract class IOIO_thread extends BaseIOIOLooper {
     public abstract void move(int value);
+
     public abstract void turn(int value);
 }

@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.util.Log;
+
 import ioio.lib.api.AnalogInput;
 import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.PwmOutput;
@@ -17,8 +18,7 @@ import ioio.lib.api.Uart;
 import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.util.BaseIOIOLooper;
 
-public class IOIO_thread_serial extends IOIO_thread
-{
+public class IOIO_thread_serial extends IOIO_thread {
     private PwmOutput pwm_pan_output, pwm_tilt_output;
     private int move_value, turn_value;
 
@@ -28,14 +28,12 @@ public class IOIO_thread_serial extends IOIO_thread
     static final int DEFAULT_PWM = 1500, MAX_PWM = 2000, MIN_PWM = 1000;
 
     @Override
-    public void setup() throws ConnectionLostException
-    {
-        try
-        {
+    public void setup() throws ConnectionLostException {
+        try {
             pwm_pan_output = ioio_.openPwmOutput(5, 50); //motor channel 1: back right;
             pwm_tilt_output = ioio_.openPwmOutput(6, 50); //motor channel 1: back right;
 
-            Uart uart = ioio_.openUart(3,4,230400, Uart.Parity.NONE,Uart.StopBits.ONE);
+            Uart uart = ioio_.openUart(3, 4, 230400, Uart.Parity.NONE, Uart.StopBits.ONE);
             in = uart.getInputStream();
             out = uart.getOutputStream();
 
@@ -45,35 +43,35 @@ public class IOIO_thread_serial extends IOIO_thread
             turn(1500);
             move_value = 0;
             turn_value = 0;
+        } catch (ConnectionLostException e) {
+            throw e;
         }
-        catch (ConnectionLostException e){throw e;}
     }
 
-    public synchronized void sendPacket(int cmd, int byteVal){
-        try
-        {
+    public synchronized void sendPacket(int cmd, int byteVal) {
+        try {
             byte[] buffer = new byte[5];
             buffer[0] = (byte) 128;
             buffer[1] = (byte) cmd;
             buffer[2] = (byte) byteVal;
 
-            int crc16int = crc16(Arrays.copyOfRange(buffer,0,3));
-            byte[] crcBuff = ByteBuffer.allocate(4).putInt(crc16(Arrays.copyOfRange(buffer,0,3))).array();
+            int crc16int = crc16(Arrays.copyOfRange(buffer, 0, 3));
+            byte[] crcBuff = ByteBuffer.allocate(4).putInt(crc16(Arrays.copyOfRange(buffer, 0, 3))).array();
 
             buffer[3] = crcBuff[2];
             buffer[4] = crcBuff[3];
 
-            if(out != null && buffer !=null)
-                out.write(buffer,0,5);
+            if (out != null && buffer != null)
+                out.write(buffer, 0, 5);
+        } catch (IOException e) {
         }
-        catch (IOException e) {}
     }
 
     //Calculates CRC16 of nBytes of data in byte array message
     static int crc16(final byte[] buffer) {
         int crc = 0x0000;
         for (int b = 0; b < buffer.length; b++) {
-            crc = crc ^ ((int)buffer[b] << 8);
+            crc = crc ^ ((int) buffer[b] << 8);
             for (int bit = 0; bit < 8; bit++) {
                 if ((crc & 0x8000) > 0) {
                     crc = (crc << 1) ^ 0x1021;
@@ -82,60 +80,57 @@ public class IOIO_thread_serial extends IOIO_thread
                 }
             }
         }
-        return (int)crc;
+        return (int) crc;
     }
 
-    public synchronized void move(int value)
-    {
-        int translated_value = (int)((value - 1500) * 64 / (float) 1000 * 4 + 64);
+    public synchronized void move(int value) {
+        int translated_value = (int) ((value - 1500) * 64 / (float) 1000 * 4 + 64);
         if (translated_value < 0)
             translated_value = 0;
         if (translated_value > 128)
             translated_value = 128;
         boolean success = false;
         //if(move_value != translated_value){
-            //move_value = translated_value;
-            //while(!success) {
-                sendPacket(12, translated_value);
-                try {
-                    int byte1 = in.read() & 0xFF;
-                    //if (byte1 == 255)
-                        //success = true;
-                } catch (Exception e) {
-                }
-            //}
+        //move_value = translated_value;
+        //while(!success) {
+        sendPacket(12, translated_value);
+        try {
+            int byte1 = in.read() & 0xFF;
+            //if (byte1 == 255)
+            //success = true;
+        } catch (Exception e) {
+        }
+        //}
         //}
     }
 
-    public synchronized void turn(int value)
-    {
-        int translated_value = (int)((value - 1500) * 64 / (float) 1000 * 4 + 64);
+    public synchronized void turn(int value) {
+        int translated_value = (int) ((value - 1500) * 64 / (float) 1000 * 4 + 64);
         if (translated_value < 0)
             translated_value = 0;
         if (translated_value > 128)
             translated_value = 128;
         boolean success = false;
         //if(turn_value != translated_value){
-            //turn_value = translated_value;
-            //while(!success) {
-                sendPacket(13, translated_value);
-                try {
-                    int byte1 = in.read() & 0xFF;
-                    //if (byte1 == 255)
-                        //success = true;
-                } catch (Exception e) {
-                }
-            //}
+        //turn_value = translated_value;
+        //while(!success) {
+        sendPacket(13, translated_value);
+        try {
+            int byte1 = in.read() & 0xFF;
+            //if (byte1 == 255)
+            //success = true;
+        } catch (Exception e) {
+        }
+        //}
         //}
     }
 
 
-    public synchronized void pan(int value)
-    {
+    public synchronized void pan(int value) {
         try {
-            if(value > MAX_PWM)
+            if (value > MAX_PWM)
                 pwm_pan_output.setPulseWidth(MAX_PWM);
-            else if(value < MIN_PWM)
+            else if (value < MIN_PWM)
                 pwm_pan_output.setPulseWidth(MIN_PWM);
             else
                 pwm_pan_output.setPulseWidth(value);
@@ -145,12 +140,11 @@ public class IOIO_thread_serial extends IOIO_thread
 
     }
 
-    public synchronized void tilt(int value)
-    {
+    public synchronized void tilt(int value) {
         try {
-            if(value > MAX_PWM)
+            if (value > MAX_PWM)
                 pwm_tilt_output.setPulseWidth(MAX_PWM);
-            else if(value < MIN_PWM)
+            else if (value < MIN_PWM)
                 pwm_tilt_output.setPulseWidth(MIN_PWM);
             else
                 pwm_tilt_output.setPulseWidth(value);

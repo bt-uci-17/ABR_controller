@@ -23,9 +23,9 @@ public class Settings extends Activity {
         setContentView(R.layout.settings);
         SharedPreferences settings = getSharedPreferences("Settings", 0);
 
-        currentDisplaySpinner = (Spinner)findViewById(R.id.currentDisplaySpinner);
+        currentDisplaySpinner = (Spinner) findViewById(R.id.currentDisplaySpinner);
 
-        buttonConnect = (Button)findViewById(R.id.buttonConnect);
+        buttonConnect = (Button) findViewById(R.id.buttonConnect);
         buttonConnect.setEnabled(false);
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -49,7 +49,8 @@ public class Settings extends Activity {
                             buttonConnect.setEnabled(true);
                         }
                     });
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException e) {
+                }
             }
         }).start();
     }
