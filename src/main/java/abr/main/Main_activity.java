@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.RelativeLayout;
 
-public class Main_activity extends Activity implements IOIOLooperProvider        // implements IOIOLooperProvider: from IOIOActivity
-{
+import static android.os.Build.SERIAL;
+
+// implements IOIOLooperProvider: from IOIOActivity
+public class Main_activity extends Activity implements IOIOLooperProvider {
     private final IOIOAndroidApplicationHelper helper_ = new IOIOAndroidApplicationHelper(this, this);            // from IOIOActivity
     RelativeLayout layout_left_joystick, layout_right_joystick;
     JoyStickClass js_left, js_right;
