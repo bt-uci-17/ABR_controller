@@ -66,10 +66,24 @@ public class Main_activity extends Activity implements IOIOLooperProvider 		// i
 				js_left.drawStick(arg1);
 				if(arg1.getAction() == MotionEvent.ACTION_DOWN	|| arg1.getAction() == MotionEvent.ACTION_MOVE) 
 				{
-					int direction = js_left.get4Direction();
-					if(direction == JoyStickClass.STICK_UP) 				m_ioio_thread.move(1600);
-					else if(direction == JoyStickClass.STICK_DOWN) 			m_ioio_thread.move(1400);
-					else if(direction == JoyStickClass.STICK_NONE) 			m_ioio_thread.move(1500);
+                    int speed = js_left.getY();
+                    // Y values returned are from 0 to over 300 and under -300.
+                    // Let's cap at 300 then divide by 100 and then finally feed that into the motor.
+
+                    speed = -speed; // We want the robot to go forward when the "up" part of the
+                                    // circle is touched.
+
+                    if (speed > 300) {
+                        speed = 300;
+                    } else if (speed < -300) {
+                        speed = -300;
+                    }
+
+                    speed = (speed / 3);
+                    speed = speed + 1500;
+                    System.out.println(speed);
+
+                    m_ioio_thread.move(speed);
 				}
 				else if(arg1.getAction() == MotionEvent.ACTION_UP) //user stopped touching screen on layout
 				{
@@ -85,38 +99,24 @@ public class Main_activity extends Activity implements IOIOLooperProvider 		// i
 				js_right.drawStick(arg1);
 				if(arg1.getAction() == MotionEvent.ACTION_DOWN	|| arg1.getAction() == MotionEvent.ACTION_MOVE) 
 				{
-                    int direction = js_right.get8Direction();
-                    if(direction == JoyStickClass.STICK_RIGHT){
-                        m_ioio_thread.turn(1600);
-                        System.out.println("STICK_RIGHT");
+                    int directionMagnitude = js_right.getX();
+                    // X values returned are from 0 to over 300 and under -300.
+                    // Let's cap it at 300 and then divide by 3 to get a range 0-100
+                    // and then finally we can feed that value into the turn function.
+
+                    if (directionMagnitude > 300) {
+                        directionMagnitude = 300;
+                    } else if (directionMagnitude < -300) {
+                        directionMagnitude = -300;
                     }
-                    else if(direction == JoyStickClass.STICK_UPRIGHT){
-                        m_ioio_thread.turn(1550);
-                        System.out.println("STICK_UPRIGHT");
-                    }
-                    else if(direction == JoyStickClass.STICK_DOWNRIGHT){
-                        m_ioio_thread.turn(1550);
-                        System.out.println("STICK_DOWNRIGHT");
-                    }
-                    else if(direction == JoyStickClass.STICK_LEFT){
-                        m_ioio_thread.turn(1400);
-                        System.out.println("STICK_LEFT");
-                    }
-                    else if(direction == JoyStickClass.STICK_UPLEFT){
-                        m_ioio_thread.turn(1450);
-                        System.out.println("STICK_UPLEFT");
-                    }
-                    else if(direction == JoyStickClass.STICK_DOWNLEFT){
-                        m_ioio_thread.turn(1450);
-                        System.out.println("STICK_DOWNLEFT");
-                    }
-                    else if(direction == JoyStickClass.STICK_NONE){
-                        m_ioio_thread.turn(1500);
-                        System.out.println("STICK_NONE");
-                    }
-                    else{
-                        m_ioio_thread.turn(1500);
-                    }
+
+                    directionMagnitude = (directionMagnitude / 3);
+                    directionMagnitude = directionMagnitude + 1500;
+                    m_ioio_thread.turn(directionMagnitude);
+
+                    System.out.println(directionMagnitude);
+
+
 				}
 				else if(arg1.getAction() == MotionEvent.ACTION_UP) //user stopped touching screen on layout
 				{
