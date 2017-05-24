@@ -6,6 +6,7 @@ import ioio.lib.util.android.IOIOAndroidApplicationHelper;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -84,10 +85,38 @@ public class Main_activity extends Activity implements IOIOLooperProvider 		// i
 				js_right.drawStick(arg1);
 				if(arg1.getAction() == MotionEvent.ACTION_DOWN	|| arg1.getAction() == MotionEvent.ACTION_MOVE) 
 				{
-					int direction = js_right.get4Direction();
-					if(direction == JoyStickClass.STICK_RIGHT) 				m_ioio_thread.turn(1600);
-					else if(direction == JoyStickClass.STICK_LEFT) 			m_ioio_thread.turn(1400);
-					else if(direction == JoyStickClass.STICK_NONE) 			m_ioio_thread.turn(1500);
+                    int direction = js_right.get8Direction();
+                    if(direction == JoyStickClass.STICK_RIGHT){
+                        m_ioio_thread.turn(1600);
+                        System.out.println("STICK_RIGHT");
+                    }
+                    else if(direction == JoyStickClass.STICK_UPRIGHT){
+                        m_ioio_thread.turn(1550);
+                        System.out.println("STICK_UPRIGHT");
+                    }
+                    else if(direction == JoyStickClass.STICK_DOWNRIGHT){
+                        m_ioio_thread.turn(1550);
+                        System.out.println("STICK_DOWNRIGHT");
+                    }
+                    else if(direction == JoyStickClass.STICK_LEFT){
+                        m_ioio_thread.turn(1400);
+                        System.out.println("STICK_LEFT");
+                    }
+                    else if(direction == JoyStickClass.STICK_UPLEFT){
+                        m_ioio_thread.turn(1450);
+                        System.out.println("STICK_UPLEFT");
+                    }
+                    else if(direction == JoyStickClass.STICK_DOWNLEFT){
+                        m_ioio_thread.turn(1450);
+                        System.out.println("STICK_DOWNLEFT");
+                    }
+                    else if(direction == JoyStickClass.STICK_NONE){
+                        m_ioio_thread.turn(1500);
+                        System.out.println("STICK_NONE");
+                    }
+                    else{
+                        m_ioio_thread.turn(1500);
+                    }
 				}
 				else if(arg1.getAction() == MotionEvent.ACTION_UP) //user stopped touching screen on layout
 				{
